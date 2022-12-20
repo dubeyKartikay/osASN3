@@ -69,6 +69,7 @@ int main()
             }
             dp.max_int = max_int;
             dp.flag = 1;
+            printf("P2 : max_int %d\n",max_int);
             memcpy(data, &dp, sizeof(struct dataPacket));
         }
 

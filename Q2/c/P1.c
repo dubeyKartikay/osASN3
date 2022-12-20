@@ -62,7 +62,7 @@ int main()
     int max_int = 0;
     struct dataPacket dp;
     dp.flag = 1;
-    dp.max_int = 0;
+    dp.max_int = -1;
     memcpy(data, &dp, sizeof(struct dataPacket));
     while (1)
     {
