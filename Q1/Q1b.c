@@ -8,8 +8,14 @@
 sem_t forks[N];
 sem_t sauceBowls[2];
 
-void *philosopher(void *idVoid)
+int pilid[5] = {0,1,2,3,4};
+void *philosopher(void *idVoid)  
 {
+
+    while (1)
+    {
+        
+    
     int id = *(int *)idVoid;
 
     printf("Philosopher %d is now thinking\n", id);
@@ -38,6 +44,7 @@ void *philosopher(void *idVoid)
     sem_post(&sauceBowls[(id % 2)]);
     sem_post(&forks[id]);
     sem_post(&forks[(id + 1) % N]);
+    }
 }
 
 int main()
@@ -55,7 +62,7 @@ int main()
 
     for (int i = 0; i < N; i++)
     {
-        pthread_create(&threads[i], NULL, philosopher, (void *)&i);
+        pthread_create(&threads[i], NULL, philosopher, pilid+i);
     }
 
     for (int i = 0; i < N; i++)

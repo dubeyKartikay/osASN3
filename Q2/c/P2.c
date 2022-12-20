@@ -1,25 +1,12 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <sys/shm.h>
 #include <string.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
+#include <semaphore.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <errno.h>
 
-#define STRINGLEN 5
-
-char *genString()
-{
-
-    char *string = (char *)calloc(6, sizeof(char));
-    for (size_t i = 0; i < STRINGLEN; i++)
-    {
-        string[i] = 97 + rand() % 26;
-    }
-    string[STRINGLEN] = '\0';
-    return string;
-}
+#define SHMNAME "shm"
+#define SEMOPHORE_NAME "thhirteen"
 struct data
 {
     int id;
@@ -27,62 +14,75 @@ struct data
 };
 struct dataPacket
 {
+    int flag;
+    int max_int;
     struct data d[5];
 };
 
 int main()
 {
-    const char *name = "shared_memory";
-    const int SIZE = 4096;
-
-    int shm_fd;
-    void *ptr;
-
-    struct data dataArr[50];
-
-    for (size_t i = 0; i < 50; i++)
+    // Get the shared memory segment created by P1
+    // sleep(0.5);
+    key_t key = ftok(SHMNAME, 123);
+    int shmid = shmget(key, 1024, 0666);
+    if (shmid < 0)
     {
-        dataArr[i].id = i;
-        strcpy(dataArr[i].data, genString());
-    }
-
-    // open the shared memory object
-    shm_fd = shm_open(name, O_RDONLY, 0666);
-    if (shm_fd == -1)
-    {
-        printf("Error in opening shm : %s", strerror(errno));
+        perror("Error getting shared memory segment");
         return 1;
     }
 
-    // memory map the shared memory object
-    ptr = mmap(0, SIZE, PROT_READ, MAP_SHARED, shm_fd, 0);
-    if (ptr == MAP_FAILED)
+    char *data = shmat(shmid, NULL, 0);
+    if (data == (char *)-1)
     {
-        printf("Error in nmap : %s", strerror(errno));
-        return 2;
+        perror("Error attaching shared memory segment");
+        return 1;
     }
-
-    struct dataPacket buffer;
+    sem_t *sem = sem_open(SEMOPHORE_NAME, 0);
     int max_int = 0;
     while (1)
     {
+        // sleep(1);
+        struct dataPacket dp;
+        dp.flag = 1;
+        sem_wait(sem);
+        // printf("dcd %d\n",*data);
 
-        for (size_t i = max_int; i < max_int + 5; i++)
+        memcpy(&dp, data, sizeof(struct dataPacket));
+        
+        if (dp.flag == -1)
         {
-            if (max_int > 49)
+        sem_post(sem);
+        break;
+            
+        }
+        if (&dp != NULL && dp.flag != 1)
+        {
+            for (int i = 0; i < 5; i++)
             {
-                buffer.d[i - max_int].id = -1;
-                strcpy(buffer.d[i - max_int].data, "\0");
-                continue;
-            }
+                printf("id : (%d)  (%s) \n", dp.d[i].id, dp.d[i].data);
+                fflush(stdout);
 
-            buffer.d[i - max_int] = dataArr[i];
+                if (dp.d[i].id > max_int)
+                {
+                    max_int = dp.d[i].id;
+                }
+            }
+            dp.max_int = max_int;
+            dp.flag = 1;
+            memcpy(data, &dp, sizeof(struct dataPacket));
         }
 
-    
-        // read from the shared memory region
+        
+
+        sem_post(sem);
     }
-    printf("Message from P1: %s\n", (char *)ptr);
+
+    sem_close(sem);
+    if (shmdt(data) < 0)
+    {
+        perror("Error detaching shared memory segment");
+        return 1;
+    }
 
     return 0;
 }

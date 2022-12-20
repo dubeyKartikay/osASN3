@@ -5,13 +5,13 @@
 #define EAT 5000000
 
 int forksOccupied[5];
-
+int philId[5] = {0,1,2,3,4};
 
 
 void * philosopher(void * idVoid){
     int  id = *(int *)idVoid;
 
-//    while(1){
+   while(1){
     printf("philosopher no %d is now thinking\n",id);
 
     if (id%2==0)
@@ -45,7 +45,7 @@ void * philosopher(void * idVoid){
     }
 
 
-//    }
+   }
 
 }
 
@@ -60,7 +60,7 @@ int main(){
 
     for (int i = 0; i < N; i++)
     {    
-        pthread_create(&threads[i],NULL,philosopher,(void *)&i);
+        pthread_create(&threads[i],NULL,philosopher,philId+i);
     }
     
     for (int i = 0; i < N; i++)

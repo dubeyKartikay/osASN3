@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.ejs": "html",
-        "sched.h": "c"
+        "sched.h": "c",
+        "limits": "c"
     }
 }
