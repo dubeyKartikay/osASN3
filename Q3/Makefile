@@ -1,4 +1,4 @@
-obj-m += task_module_os.o
+obj-m += pinfo.o
 
 all:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules

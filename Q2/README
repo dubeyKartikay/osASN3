@@ -1,0 +1,5 @@
+Socket - they are made for 2 two communiction and hence was the easiest to work with, use senn() and recv()
+
+FIFO - they are not meant for two way communication hence according to theory , for reliable 2 way communication we have to use two pips to establish two way communication.
+
+Shared memory - the most trickey to work with, i had to flag the datapacket with 1 or 0 to keep track of who wrote to the memory last as well as use a semophore to avoid any race condition 

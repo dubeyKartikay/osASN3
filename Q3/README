@@ -1,0 +1,3 @@
+IN the above program, use defined two functions pinfo_init and pinfo_exit
+and then we mapped these functions to module_init ,  module_exit to that functions pinfo_init and pinfo_exit
+they get called when the module is installed using insmod and removed using rmmod
