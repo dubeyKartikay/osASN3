@@ -1,8 +1,11 @@
-to avoid deadlock, if the philosopher posiion is even we pick up the left fork first and the the right fork, if its odd then we pick up the right fork first and then the left fork 
+to avoid deadlock, if the philosopher position is 0 1 2 3 them pick up the left fork first and then the right fork if the position is 4 then pickup the right fork first and the left fork;
 
 In part(a) 1:
     without using semephores we use spin locks to avoid entring the critical section if  one of the fork is occupied 
 In part(a) 2:
     using semphores we replace the while loop with sem_wait and after we are done with the CS we use sem_post to release the semophore
+in part(b):
+    if we accuire the bowl after we accique the forks and the keep the bowl first and them the forks , we will always avoid deadlock
+
     
 
