@@ -5,6 +5,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/un.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <time.h>
+#include <sys/resource.h>
 struct data
 {
     int id;
@@ -49,6 +53,8 @@ int main()
         return 4;
     }
     struct dataPacket *buffer = (struct dataPacket *)calloc(1, sizeof(struct dataPacket));
+    struct timespec start, finish,diff;
+    clock_gettime( CLOCK_REALTIME, &start );
     while (1)
     {
         res = recv(clientFile, buffer, sizeof(struct dataPacket), 0);
@@ -91,6 +97,16 @@ int main()
         
         // printf("Received message: %s\n", buffer);
     }
+    clock_gettime( CLOCK_REALTIME, &finish );
+    diff.tv_sec = finish.tv_sec - start.tv_sec;
+    diff.tv_nsec = finish.tv_nsec - start.tv_nsec;
+    if (diff.tv_nsec < 0)
+    {
+        diff.tv_nsec+=1000000000;
+        diff.tv_sec--;
+    }
+    
+    printf("Time taken %d,%ld",diff.tv_sec,diff.tv_nsec);
     close(clientFile);
     close(socketfile);
     return 0;

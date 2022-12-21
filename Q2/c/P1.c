@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #define SHMNAME "shm"
-#define SEMOPHORE_NAME "thhirteen"
+#define SEMOPHORE_NAME "fourteen"
 #define STRINGLEN 5
 
 char *genString()

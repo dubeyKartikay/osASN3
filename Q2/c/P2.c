@@ -4,9 +4,13 @@
 #include <semaphore.h>
 #include <fcntl.h>
 #include <unistd.h>
-
+#include <sys/un.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <time.h>
+#include <sys/resource.h>
 #define SHMNAME "shm"
-#define SEMOPHORE_NAME "thhirteen"
+#define SEMOPHORE_NAME "fourteen"
 struct data
 {
     int id;
@@ -39,6 +43,8 @@ int main()
     }
     sem_t *sem = sem_open(SEMOPHORE_NAME, 0);
     int max_int = 0;
+    struct timespec start, finish,diff;
+    clock_gettime( CLOCK_REALTIME, &start );
     while (1)
     {
         // sleep(1);
@@ -79,6 +85,17 @@ int main()
     }
 
     sem_close(sem);
+
+    clock_gettime( CLOCK_REALTIME, &finish );
+    diff.tv_sec = finish.tv_sec - start.tv_sec;
+    diff.tv_nsec = finish.tv_nsec - start.tv_nsec;
+    if (diff.tv_nsec < 0)
+    {
+        diff.tv_nsec+=1000000000;
+        diff.tv_sec--;
+    }
+    
+    printf("Time taken %d,%ld",diff.tv_sec,diff.tv_nsec);
     if (shmdt(data) < 0)
     {
         perror("Error detaching shared memory segment");

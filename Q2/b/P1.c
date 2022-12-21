@@ -4,7 +4,12 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include<sys/stat.h>
+#include <sys/stat.h>
+#include <sys/un.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <time.h>
+#include <sys/resource.h>
 struct data
 {
     int id;
@@ -34,6 +39,8 @@ int main()
     struct dataPacket *buffer = (struct dataPacket *)calloc(1, sizeof(struct dataPacket));
     // Continuously read from FIFO 1 and write to FIFO 2
     int max_id = 0;
+    struct timespec start, finish, diff;
+    clock_gettime(CLOCK_REALTIME, &start);
     while (1)
     {
         int message;
@@ -71,7 +78,16 @@ int main()
             break;
         }
     }
+    clock_gettime(CLOCK_REALTIME, &finish);
+    diff.tv_sec = finish.tv_sec - start.tv_sec;
+    diff.tv_nsec = finish.tv_nsec - start.tv_nsec;
+    if (diff.tv_nsec < 0)
+    {
+        diff.tv_nsec += 1000000000;
+        diff.tv_sec--;
+    }
 
+    printf("Time taken %d,%ld", diff.tv_sec, diff.tv_nsec);
     close(fifo1);
     close(fifo2);
     return 0;

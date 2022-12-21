@@ -5,7 +5,11 @@
 #include <fcntl.h>
 #include<string.h>
 #include<sys/stat.h>
-
+#include <sys/un.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <time.h>
+#include <sys/resource.h>
 
 #define STRINGLEN 5
 
